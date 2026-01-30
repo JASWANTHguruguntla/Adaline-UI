@@ -1,50 +1,148 @@
-import { useEffect, useState } from "react";
-import SalesforceLogo from "./logos/Salesforce";
-import DiscordLogo from "./logos/Discord";
-import HubSpotLogo from "./logos/HubSpot";
-import McKinseyLogo from "./logos/McKinsey";
-import ReforgeLogo from "./logos/Reforge";
+import { useEffect, useState, useRef } from "react";
+import Salesforce from "./logos/Salesforce";
+import Discord from "./logos/Discord";
+import HubSpot from "./logos/HubSpot";
+import McKinsey from "./logos/McKinsey";
+import Reforge from "./logos/Reforge";
 
 export default function Hero() {
   const [scrollY, setScrollY] = useState(0);
+  const canvasRef = useRef(null);
+  const [images, setImages] = useState([]);
+  const [imagesLoaded, setImagesLoaded] = useState(0);
+  const currentFrame = useRef(0);
 
+  const frameCount = 180;
+  const basePath = "/frames/frame-";
+
+  // Preload frames
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
+    const imageArray = [];
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    for (let i = 1; i <= frameCount; i++) {
+      const img = new Image();
+      const frameNumber = String(i).padStart(3, '0');
+      img.src = `${basePath}${frameNumber}.webp`;
+
+      img.onload = () => {
+        setImagesLoaded(prev => prev + 1);
+      };
+
+      imageArray.push(img);
+    }
+
+    setImages(imageArray);
   }, []);
 
-  // Calculate scroll-based transforms
-  const opacity = Math.max(0, 1 - scrollY / 300);
-  const scale = Math.max(0.85, 1 - scrollY / 2000);
-  const translateY = -(scrollY * 0.3);
+  // Handle scroll for both content and canvas
+  useEffect(() => {
+    const canvas = canvasRef.current;
+
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      setScrollY(scrollPosition);
+
+      // Update canvas frame
+      if (canvas && images.length > 0) {
+        const context = canvas.getContext("2d");
+        const heroSection = document.querySelector('.hero');
+        if (!heroSection) return;
+
+        const rect = heroSection.getBoundingClientRect();
+        const scrollStart = -rect.top;
+        const scrollHeight = rect.height - window.innerHeight;
+
+        let scrollProgress = scrollStart / scrollHeight;
+        scrollProgress = Math.max(0, Math.min(1, scrollProgress));
+
+        const frameIndex = Math.floor(scrollProgress * (frameCount - 1));
+
+        if (frameIndex !== currentFrame.current && images[frameIndex]) {
+          currentFrame.current = frameIndex;
+
+          context.clearRect(0, 0, canvas.width, canvas.height);
+
+          const img = images[frameIndex];
+          const scale = Math.max(
+            canvas.width / img.width,
+            canvas.height / img.height
+          );
+
+          const x = (canvas.width / 2) - (img.width / 2) * scale;
+          const y = (canvas.height / 2) - (img.height / 2) * scale;
+
+          context.drawImage(img, x, y, img.width * scale, img.height * scale);
+        }
+      }
+    };
+
+    const handleResize = () => {
+      if (canvas) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        handleScroll();
+      }
+    };
+
+    if (canvas) {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    if (images[0]) {
+      handleScroll();
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [images]);
+
+  // Calculate scroll-based transforms for content
+  const opacity = Math.max(0, 1 - scrollY / 500);
+  const scale = Math.max(0, 1 - scrollY / 1000);
 
   const logos = [
-    <SalesforceLogo key="sf1" />,
-    <DiscordLogo key="d1" />,
-    <HubSpotLogo key="hs1" />,
-    <McKinseyLogo key="m1" />,
-    <ReforgeLogo key="r1" />,
-    // Duplicates for seamless loop
-    <SalesforceLogo key="sf2" />,
-    <DiscordLogo key="d2" />,
-    <HubSpotLogo key="hs2" />,
-    <McKinseyLogo key="m2" />,
-    <ReforgeLogo key="r2" />,
+    { component: Salesforce, key: "salesforce-1" },
+    { component: Discord, key: "discord-1" },
+    { component: HubSpot, key: "hubspot-1" },
+    { component: McKinsey, key: "mckinsey-1" },
+    { component: Reforge, key: "reforge-1" },
+    { component: Salesforce, key: "salesforce-2" },
+    { component: Discord, key: "discord-2" },
+    { component: HubSpot, key: "hubspot-2" },
+    { component: McKinsey, key: "mckinsey-2" },
+    { component: Reforge, key: "reforge-2" },
   ];
 
   return (
     <section className="hero">
+      {/* Canvas Background */}
+      <canvas ref={canvasRef} className="hero-canvas-bg" />
+
+      {/* Loading Indicator */}
+      {imagesLoaded < frameCount && (
+        <div className="hero-canvas-loading">
+          <p>Loading animation: {imagesLoaded} / {frameCount}</p>
+          <div className="loading-bar">
+            <div
+              className="loading-progress"
+              style={{ width: `${(imagesLoaded / frameCount) * 100}%` }}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="hero-wrapper">
-        {/* Sticky Content with Mask Effect */}
         <div
           className="hero-sticky-content"
           style={{
             opacity,
-            transform: `translateY(${translateY}px) scale(${scale})`,
+            transform: `translate3d(-50%, -50%, 0) scale(${scale})`,
           }}
         >
           {/* Main Content */}
@@ -54,14 +152,14 @@ export default function Hero() {
             </h1>
           </div>
 
-          {/* Trusted By Section with Scrolling Logos */}
+          {/* Trusted By Section */}
           <div className="hero-trusted">
-            <p className="trusted-label">TRUSTED BY</p>
+            <p className="trusted-label">Trusted by</p>
             <div className="trusted-logos-wrapper">
               <div className="trusted-logos-track">
-                {logos.map((logo, index) => (
-                  <div key={index} className="logo-item">
-                    {logo}
+                {logos.map(({ component: Logo, key }) => (
+                  <div key={key} className="logo-item">
+                    <Logo />
                   </div>
                 ))}
               </div>

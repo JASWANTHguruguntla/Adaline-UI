@@ -270,9 +270,41 @@ code {
 /* Hero Section */
 .hero {
   min-height: 100vh;
-  background: var(--pebble-50);
+  height: 300vh;
   position: relative;
   overflow: hidden;
+  background: #fbfdf6;
+}
+
+.hero-canvas-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-canvas-loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 1;
+  background: rgba(251, 253, 246, 0.9);
+  padding: 32px 48px;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.hero-canvas-loading p {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgb(10, 29, 8);
+  font-family: 'Fragment Mono', monospace;
 }
 
 .hero-wrapper {
@@ -280,24 +312,33 @@ code {
   width: 100%;
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: start;
   justify-content: center;
+  z-index: 10;
 }
 
 .hero-sticky-content {
-  position: sticky;
-  top: 20vh;
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 60px;
+  gap: 10px;
   width: 100%;
   max-width: 900px;
   padding: 0 48px;
+  z-index: 10;
   transform-origin: center;
-  transition: opacity 0.1s ease, transform 0.1s ease;
   will-change: opacity, transform;
   pointer-events: auto;
+
+  /* Anti-blur optimizations */
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  perspective: 1000px;
 }
 
 /* Main Content */
@@ -310,21 +351,25 @@ code {
 }
 
 .hero-headline {
-  font-size: 64px;
-  font-weight: 500;
-  line-height: 1.15;
-  color: var(--meadow-900);
-  margin: 0;
-  letter-spacing: -0.02em;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  margin-inline: var(--grid-margin);
   max-width: 32ch;
+  font-size: min(53px, min(calc(2.5vh + 25px), calc(1.5vw + 25px)));
+  font-weight: 500;
+  line-height: calc(52 / 53);
+  letter-spacing: -0.04em;
+  color: #173225;
+  margin: 0;
+  font-family: "Akkurat", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  text-align: center;
+  text-wrap: balance;
+  pointer-events: auto;
 }
 
-@media (min-width: 768px) {
+@media (max-width: 767px) {
   .hero-headline {
-    font-size: min(53px, min(calc(2.5vh + 25px), calc(1.5vw + 25px)));
-    line-height: calc(52 / 53);
-    letter-spacing: -0.04em;
+    font-size: 40px;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
   }
 }
 
@@ -336,16 +381,18 @@ code {
   gap: 32px;
   width: 100%;
   margin-top: 40px;
+
 }
 
 .trusted-label {
   font-size: 11px;
   font-weight: 500;
-  color: var(--meadow-700);
+  color: #1f3d2b;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   margin: 0;
   opacity: 0.4;
+
 }
 
 .trusted-logos-wrapper {
@@ -359,6 +406,7 @@ code {
       black 5%,
       black 95%,
       transparent 100%);
+
 }
 
 .trusted-logos-track {
@@ -367,15 +415,22 @@ code {
   align-items: center;
   animation: scroll-logos 30s linear infinite;
   width: fit-content;
+
+  /* Anti-blur for animation */
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 @keyframes scroll-logos {
-  0% {
-    transform: translateX(0);
+  from {
+    transform: translate3d(0, 0, 0);
   }
 
-  100% {
-    transform: translateX(-50%);
+  to {
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
@@ -384,12 +439,8 @@ code {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  opacity: 0.6;
-  transition: opacity 0.2s ease;
-}
-
-.logo-item:hover {
   opacity: 1;
+  color: #1f3d2b;
 }
 
 .logo-item svg {
@@ -429,8 +480,27 @@ code {
   margin: 0;
 }
 
+.loading-bar {
+  width: 300px;
+  height: 4px;
+  background: rgba(99, 143, 61, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.loading-progress {
+  height: 100%;
+  background: rgb(99, 143, 61);
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
+  .hero {
+    height: 200vh;
+  }
+
   .hero-sticky-content {
     top: 15vh;
     padding: 0 24px;
@@ -447,5 +517,13 @@ code {
 
   .logo-item {
     font-size: 13px;
+  }
+
+  .hero-canvas-loading {
+    padding: 24px 32px;
+  }
+
+  .loading-bar {
+    width: 200px;
   }
 }
