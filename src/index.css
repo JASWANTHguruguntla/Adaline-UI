@@ -5,9 +5,447 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Navbar styles (added for Adaline-like header) */
+:root {
+  --meadow-900: #173225;
+  --meadow-700: #1f3d2b;
+  --meadow-50: #f7f8f5;
+  --pebble-50: #f3f2ed;
+  --pebble-200: #e2e1db;
+  --nav-height: 72px;
+  /* reduced by 6px to nudge navbar upward */
+}
+
+
+.nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 0;
+
+}
+
+.nav-inner {
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* visually nudge the navbar up to remove the top gap */
+  transform: translateY(-4px);
+}
+
+/* make the fade a bit earlier so it looks better with the upward nudge */
+:root {
+  --nav-fade-end: 200px;
+}
+
+.nav-grid {
+  width: 100%;
+  /* make the grid span the full viewport so side items can sit at the extreme edges */
+  max-width: none;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding-left: 48px;
+  padding-right: 48px;
+  gap: 24px;
+}
+
+/* add a container to constrain the centered logo visually while keeping side items at edges */
+.logo-center {
+  justify-self: center;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  /* logo doesn't intercept interactions */
+}
+
+/* ensure left/right content has some breathing room from the absolute edge on small screens */
+@media (max-width: 480px) {
+
+  .nav-left,
+  .nav-right {
+    gap: 12px;
+  }
+
+  .nav-left {
+    padding-left: 8px;
+
+  }
+
+  .nav-right {
+    padding-right: 8px;
+  }
+}
+
+.nav-left,
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  font-size: 16px;
+  letter-spacing: 1px;
+  font-weight: 500;
+  color: var(--meadow-700);
+}
+
+/* align side columns to the edges and center the logo */
+.nav-left {
+  justify-self: start;
+  justify-content: flex-start;
+}
+
+.logo-center {
+  justify-self: center;
+}
+
+.nav-right {
+  justify-self: end;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* fade-out behavior */
+.nav {
+  position: sticky;
+  top: -6spx;
+  /* nudge navbar up slightly */
+  z-index: 1000;
+  background: transparent;
+  /* remove background so content behind shows through */
+  box-shadow: none;
+  transition: opacity 280ms ease, transform 280ms ease;
+}
+
+/* hidden when scrolling down */
+.nav-hidden {
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+}
+
+/* make sure it respects reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+  .nav,
+  .nav-hidden {
+    transition: none;
+  }
+}
+
+.nav-left {
+  justify-content: flex-start;
+}
+
+.nav-right {
+  justify-content: flex-end;
+}
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--meadow-700);
+  font-family: 'Fragment Mono', monospace;
+  /* match Products font stack */
+  line-height: 1;
+  font-size: 13px;
+}
+
+.nav-link.products {
+  cursor: default;
+  background: transparent;
+  /* remove any background */
+  padding: 0;
+  /* no extra padding */
+  border: none;
+  height: auto;
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  /* tighter gap with-chev */
+  letter-spacing: 1px;
+}
+
+/* Remove focus visual that looks like a box — keep accessible ring if needed */
+.nav-link.products:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* ensure chevron sits snug to the label */
+.nav-link.products .chev {
+  margin-left: 6px;
+}
+
+.nav-link .chev {
+  margin-left: -4px;
+}
+
+.logo-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Buttons */
+.btn {
+  height: 40px;
+  border-radius: 20px;
+  letter-spacing: .02em;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: monospace;
+}
+
+.btn-demo {
+  background: var(--pebble-50);
+  border: solid #f3f2ed;
+  color: var(--meadow-700);
+  padding: 0 18px 0 18px;
+  cursor: default;
+  pointer-events: none;
+}
+
+.btn-demo .btn-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--pebble-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: -6px;
+}
+
+.btn-primary {
+  background: var(--meadow-700);
+  color: var(--meadow-50);
+  padding: 0 24px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background: #183226;
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  .nav-grid {
+    padding: 0 18px;
+  }
+
+  .nav-left {
+    gap: 12px;
+  }
+
+  .nav-right {
+    gap: 8px;
+  }
+}
+
+/* Hero Section */
+.hero {
+  min-height: 100vh;
+  background: var(--pebble-50);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-sticky-content {
+  position: sticky;
+  top: 20vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 60px;
+  width: 100%;
+  max-width: 900px;
+  padding: 0 48px;
+  transform-origin: center;
+  transition: opacity 0.1s ease, transform 0.1s ease;
+  will-change: opacity, transform;
+  pointer-events: auto;
+}
+
+/* Main Content */
+.hero-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+.hero-headline {
+  font-size: 64px;
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--meadow-900);
+  margin: 0;
+  letter-spacing: -0.02em;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  max-width: 32ch;
+}
+
+@media (min-width: 768px) {
+  .hero-headline {
+    font-size: min(53px, min(calc(2.5vh + 25px), calc(1.5vw + 25px)));
+    line-height: calc(52 / 53);
+    letter-spacing: -0.04em;
+  }
+}
+
+/* Trusted By Section */
+.hero-trusted {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  width: 100%;
+  margin-top: 40px;
+}
+
+.trusted-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--meadow-700);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 0;
+  opacity: 0.4;
+}
+
+.trusted-logos-wrapper {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+
+  /* Mask gradient for edge fade */
+  mask-image: linear-gradient(to right,
+      transparent 0%,
+      black 5%,
+      black 95%,
+      transparent 100%);
+}
+
+.trusted-logos-track {
+  display: flex;
+  gap: 64px;
+  align-items: center;
+  animation: scroll-logos 30s linear infinite;
+  width: fit-content;
+}
+
+@keyframes scroll-logos {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.logo-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.logo-item:hover {
+  opacity: 1;
+}
+
+.logo-item svg {
+  height: 20px;
+  width: auto;
+}
+
+/* Three Pillars */
+.hero-pillars {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.pillar {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pillar-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--meadow-900);
+  margin: 0;
+  font-family: 'Fragment Mono', monospace;
+  letter-spacing: 0.5px;
+}
+
+.pillar-text {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--meadow-700);
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-sticky-content {
+    top: 15vh;
+    padding: 0 24px;
+    gap: 50px;
+  }
+
+  .hero-headline {
+    font-size: 40px;
+  }
+
+  .trusted-logos-track {
+    gap: 48px;
+  }
+
+  .logo-item {
+    font-size: 13px;
+  }
 }
