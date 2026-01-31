@@ -4,6 +4,11 @@ import Discord from "./logos/Discord";
 import HubSpot from "./logos/HubSpot";
 import McKinsey from "./logos/McKinsey";
 import Reforge from "./logos/Reforge";
+import CrushandLovely from "./logos/CrushandLovely";
+import Coframe from "./logos/Coframe";
+import DoorDash from "./logos/DoorDash";
+import Ueberich from "./logos/Ueberich";
+import SimpleDocsId from "./logos/SimpleDocsId";
 
 export default function Hero() {
   const [scrollY, setScrollY] = useState(0);
@@ -112,11 +117,22 @@ export default function Hero() {
     { component: HubSpot, key: "hubspot-1" },
     { component: McKinsey, key: "mckinsey-1" },
     { component: Reforge, key: "reforge-1" },
+    { component: CrushandLovely, key: "crushandlovely-1" },
+    { component: Coframe, key: "coframe-1" },
+    { component: DoorDash, key: "doordash-1" },
+    { component: Ueberich, key: "ueberich-1" },
+    { component: SimpleDocsId, key: "simpledocsid-1" },
+    // Duplicates for seamless infinite scroll
     { component: Salesforce, key: "salesforce-2" },
     { component: Discord, key: "discord-2" },
     { component: HubSpot, key: "hubspot-2" },
     { component: McKinsey, key: "mckinsey-2" },
     { component: Reforge, key: "reforge-2" },
+    { component: CrushandLovely, key: "crushandlovely-2" },
+    { component: Coframe, key: "coframe-2" },
+    { component: DoorDash, key: "doordash-2" },
+    { component: Ueberich, key: "ueberich-2" },
+    { component: SimpleDocsId, key: "simpledocsid-2" },
   ];
 
   return (
@@ -148,7 +164,8 @@ export default function Hero() {
           {/* Main Content */}
           <div className="hero-content">
             <h1 className="hero-headline">
-              The single platform to iterate, evaluate, deploy, and monitor AI agents
+              The single platform to iterate, <br />
+              evaluate, deploy, and monitor AI agents
             </h1>
           </div>
 
